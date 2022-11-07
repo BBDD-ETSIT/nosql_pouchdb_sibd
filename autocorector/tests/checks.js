@@ -2,8 +2,8 @@
 /* eslint-disable no-undef*/
 // IMPORTS
 const path = require("path");
-const Utils = require("./testutils");
-const User = require('../user.json');
+const Utils = require("../utils/testutils");
+const User = require('../../user.json');
 const fs = require("fs");
 const {promisify} = require("util");
 const readfile = promisify(fs.readFile);
