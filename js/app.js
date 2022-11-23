@@ -1,6 +1,8 @@
 'use strict';
   var ENTER_KEY = 13;
   var newTodoDom = document.getElementById('new-todo');
+  var syncDom = document.getElementById('sync-wrapper');
+
   //TODO este estado debe ser cambiado por una base de datos pouchdb
   var state = [];
 
@@ -104,7 +106,7 @@
     var checkbox = document.createElement('input');
     checkbox.className = 'toggle';
     checkbox.type = 'checkbox';
-    checkbox.addEventListener('change', ()=> checkboxChanged(todo));
+    checkbox.addEventListener('change', (event)=> checkboxChanged(todo, event));
 
     var label = document.createElement('label');
     label.appendChild( document.createTextNode(todo.title));
@@ -143,11 +145,14 @@
   //función que añade los eventos iniciales
   function addEventListeners() {
     newTodoDom.addEventListener('keypress', newTodoKeyPressHandler, false);
+    //TODO, añadir eventos de online y offline para sincronizar con remoto
   }
 
   //-------------INICIAR TODO CUANDO EL DOM ESTÉ LISTO
   document.addEventListener('DOMContentLoaded', (event) => {
     addEventListeners();
+    //TODO, cambiar por databaseChangeEvent() porque hay que sacar el estado de la base de datos, no tenemos el array state ya
     redrawTodosUI(state);
-    //TODO add a call to sync method if remotedb exist
+    //TODO añadir una llamada al método sync si tenemos remotedb
+    
   });
