@@ -1,54 +1,57 @@
 'use strict';
   var ENTER_KEY = 13;
   var newTodoDom = document.getElementById('new-todo');
-  //TODO this state should be changed for a pouchdb database
+  //TODO este estado debe ser cambiado por una base de datos pouchdb
   var state = [];
 
-  //TODO add db.changes(...) and a function databaseChangeEvent that gets
-  //everything from the database and redraws the UI
+  //TODO añadir la función db.changes(...) 
+  //y una function databaseChangeEvent que obtiene todo de la base de datos y redibuja la interfaz de usuario
 
-  //TODO add remote couchdb database and sync function
 
-  //-------------STATE modifiers, create, edit, delete todo
+  //TODO añadir base de datos couchdb remota y función de sincronización 
 
-  // We have to create a new todo document and enter it in the database
+
+
+  //-------------MODIFICADORES DEL ESTADO DE LA APLICACIÓ -> create, edit, delete todo
+
+  // Tenemos que crear un nuevo documento de tareas pendientes e introducirlo en la base de datos
   function addTodo(text) {
     var todo = {
       _id: new Date().toISOString(),
       title: text,
       completed: false
     };
-    //TODO instead of pushing to the state, add the todo to the database
-    //also remove the redrawTodosUI, because with pouchdb the app redraws itself when there is a database change
+    //TODO en lugar de hacer push al array del estado, añadir la tarea a la base de datos
+    //también eliminar el redrawTodosUI, porque con pouchdb la aplicación se redibuja cuando hay un cambio de base de datos
     state.push(todo);
     redrawTodosUI(state);
   }
 
   //edit Todo. This is not necessary because todo is passed as reference and so when we modify
-  //it  in the calling method it is modified in the state
+  //it in the calling method it is modified in the state
   function editTodo(todo){
-    //TODO perform a put to the database
-    //also remove the redrawTodosUI, because with pouchdb the app redraws itself when there is a database change
+    //TODO realizar una edición (put) en la base de datos
+    //también eliminar el redrawTodosUI, porque con pouchdb la aplicación se redibuja cuando hay un cambio de base de datos
     redrawTodosUI(state);
   }
 
-  // User pressed the delete button for a todo, delete it
+  //El usuario ha pulsado el botón de borrado de una tarea, la borramos
   function deleteTodo(todo) {
-    //TODO perform a remove to the database
-    //also remove the redrawTodosUI, because with pouchdb the app redraws itself when there is a database change
+    //TODO realizar una eliminación en la base de datos
+    //también eliminar el redrawTodosUI, porque con pouchdb la aplicación se redibuja cuando hay un cambio de base de datos
     state = state.filter((item) => item._id !== todo._id);
     redrawTodosUI(state);
   }
 
-  //------------- EVENTS HANDLERS
+  //------------- MANEJADORES DE EVENTOS
 
   function checkboxChanged(todo, event) {
     todo.completed = event.target.checked;
     editTodo(todo);
   }
 
-  // The input box when editing a todo has blurred (lost focus),
-  // so save the new title or delete the todo if the title is empty
+  // El cuadro de entrada al editar una tarea se ha difuminado (blur, ha perdido el foco), 
+  //así que guarde el nuevo título o borre la tarea si el título está vacío
   function todoBlurred(todo, event) {
     var trimmedText = event.target.value.trim();
     if (!trimmedText) {
@@ -70,7 +73,7 @@
     deleteTodo(todo);
   }
 
-  // User has double clicked a todo, display an input so they can edit the title
+  // El usuario ha hecho doble clic en una tarea, mostramos una entrada para que pueda editar el título
   function todoDblClicked(todo) {
     var div = document.getElementById('li_' + todo._id);
     var inputEditTodo = document.getElementById('input_' + todo._id);
@@ -78,7 +81,7 @@
     inputEditTodo.focus();
   }
 
-  // If they press enter while editing an entry, blur it to trigger save (or delete)
+  // Si pulsan enter mientras editan una entrada, la difuminamos (blur) para activar el guardado (o el borrado)
   function todoKeyPressed(todo, event) {
     if (event.keyCode === ENTER_KEY) {
       var inputEditTodo = document.getElementById('input_' + todo._id);
@@ -86,7 +89,7 @@
     }
   }
 
-  //------------- UI FUNCTIONS
+  //------------- FUNCIONES DE INTERFAZ DE USUARIO
 
   function redrawTodosUI(todos) {
     var ul = document.getElementById('todo-list');
@@ -96,21 +99,20 @@
     });
   }
 
-  // Given an object representing a todo, this will create a list item
-  // to display it.
+  // Dado un objeto que representa un TODO, esto creará un elemento de la lista para mostrarlo y le añadirá los eventos necesarios
   function createTodoListItem(todo) {
     var checkbox = document.createElement('input');
     checkbox.className = 'toggle';
     checkbox.type = 'checkbox';
-    checkbox.addEventListener('change', checkboxChanged.bind(this, todo));
+    checkbox.addEventListener('change', ()=> checkboxChanged(todo));
 
     var label = document.createElement('label');
     label.appendChild( document.createTextNode(todo.title));
-    label.addEventListener('dblclick', todoDblClicked.bind(this, todo));
+    label.addEventListener('dblclick', ()=>todoDblClicked(todo));
 
     var deleteLink = document.createElement('button');
     deleteLink.className = 'destroy';
-    deleteLink.addEventListener( 'click', deleteButtonPressed.bind(this, todo));
+    deleteLink.addEventListener( 'click', ()=>deleteButtonPressed(todo));
 
     var divDisplay = document.createElement('div');
     divDisplay.className = 'view';
@@ -122,8 +124,8 @@
     inputEditTodo.id = 'input_' + todo._id;
     inputEditTodo.className = 'edit';
     inputEditTodo.value = todo.title;
-    inputEditTodo.addEventListener('keypress', todoKeyPressed.bind(this, todo));
-    inputEditTodo.addEventListener('blur', todoBlurred.bind(this, todo));
+    inputEditTodo.addEventListener('keypress', ()=>todoKeyPressed(todo));
+    inputEditTodo.addEventListener('blur', ()=>todoBlurred(todo));
 
     var li = document.createElement('li');
     li.id = 'li_' + todo._id;
@@ -138,13 +140,13 @@
     return li;
   }
 
+  //función que añade los eventos iniciales
   function addEventListeners() {
     newTodoDom.addEventListener('keypress', newTodoKeyPressHandler, false);
   }
 
-  //------------- START EVERYTHING WHEN DOM READY
+  //-------------INICIAR TODO CUANDO EL DOM ESTÉ LISTO
   document.addEventListener('DOMContentLoaded', (event) => {
-    //the event occurred
     addEventListeners();
     redrawTodosUI(state);
     //TODO add a call to sync method if remotedb exist
