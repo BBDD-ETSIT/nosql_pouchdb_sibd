@@ -13,8 +13,8 @@ let nano;
 let bbdd;
 
 const T_TEST = 2 * 60; // Time between tests (seconds)
-const path_assignment = path.resolve(path.join(__dirname, "../", "index.html"));
-const path_assignment2 = path.resolve(path.join(__dirname, "../", "/js/app.js"));
+const path_assignment = path.resolve(path.join(__dirname, "../../", "index.html"));
+const path_assignment2 = path.resolve(path.join(__dirname, "../../", "/js/app.js"));
 let contentindex;
 let contentapp;
 
